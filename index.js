@@ -3,29 +3,40 @@ const moment = require('moment-timezone');
 
 function createBot() {
   const bot = mineflayer.createBot({
-    host: 'your-server.aternos.me',  // 🔁 CHANGE this to your Aternos IP
-    port: 25565,                     // 🔁 Default Minecraft port, change if needed
-    username: 'AFK_Bot_01',          // 🔁 Bot name (cracked-compatible)
-    version: false                   // Auto-detect version
+    host: 'farcomunity.aternos.me',
+    port: 25565,
+    username: 'AFKBOT',
+    version: false
   });
 
-  bot.on('login', () => {
-    console.log('✅ Bot logged in.');
+  const password = 'AFKFARBOT';
 
-    // Optional: Login command for AuthMe
-    // bot.chat('/login yourpassword');
+  bot.on('login', () => {
+    console.log('✅ Bot connected. Waiting for login/register...');
+  });
+
+  bot.on('message', (message) => {
+    const msg = message.toString().toLowerCase();
+
+    if (msg.includes('/register') || msg.includes('please register')) {
+      console.log('🟨 Registering...');
+      bot.chat(`/register ${password} ${password}`);
+    } else if (msg.includes('/login') || msg.includes('please login')) {
+      console.log('🟩 Logging in...');
+      bot.chat(`/login ${password}`);
+    }
   });
 
   bot.on('end', () => {
     console.log('❌ Disconnected. Reconnecting in 10 seconds...');
-    setTimeout(createBot, 10000); // Reconnect on kick/crash
+    setTimeout(createBot, 10000);
   });
 
   bot.on('error', (err) => {
     console.error('⚠️ Bot error:', err);
   });
 
-  // 🕛 Optional: Quit at midnight Bucharest time
+  // Quit at midnight Bucharest time
   setInterval(() => {
     const now = moment().tz('Europe/Bucharest');
     if (now.format('HH:mm') === '00:00') {
